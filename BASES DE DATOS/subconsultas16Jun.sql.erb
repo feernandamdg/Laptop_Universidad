@@ -1,0 +1,107 @@
+-- Para 3 tablas Primero se junta tabla 1y2 y posteriormente este conjunto que ya esta como unificado lo puedo juntas de nuevo con la tabla3 
+-- select Tabla1.Campo, Tabla2.Campo, Tabla3.Campo
+	--from (Tabla1 join Tabla2 on condicion1)
+	--join Tabla3 on Condicion2
+	--select Tabla1.Campo, Tabla2.Campo, Tabla3.Campo
+
+--Para 4 o más tablas seguimos la misma lógica 
+-- de 3 a 4 tablas 
+select Tabla1.Campo, Tabla2.Campo, Tabla3.Campo
+from (Tabla1 join Tabla2 on condicion1)
+	join 
+	(Tabla3 join Tabla4 on Condicion2)
+	on condicion3
+
+-- Entre más tablas se hagan se vuelve más caotica la consulta
+--cuando se trabaja de esta manera es recomentable (altamente) normalizar más de la 3era forma
+
+select videojuegos.titulo, videojuegos.plataforma, 
+	extensionesvideojuegos.nombre_extension, 
+	extensionesvideojuegos.descripcion
+	-- estos selementos son lo que busco recuperar, ¿de dónde?
+	from videojuegos inner join extensionvideojuegos --por default es el inner 
+	on videojuegos.id_videojuego = extensionesvideojuegos.id_videojuego
+	-- en este join se hace referencia a la llave primaria y foranea de dos tablas 
+
+-- ¿Cómo se trabaja con join left?
+-- sustituye inner con left y regresa información de la tabla izquierda
+--de la misma manera hago right en vez de inner sucede lo mismo 
+-- hay varios sucesos que pueden ocurrir 
+-- FULL join (regresa todo lo que hay de lado izq y todo de lado derecho)
+-- se basa en la intersección y regresa datos de ambas tablas 
+
+cross join -- lo que hace es cruzar cada uno de los elementos, se hace un producto cartesiano 
+full outer join es lo mismo 
+
+-- OTRO ELEMENTO QUE SE PUEDE UTILIZAR ES LA UNIÓN 
+-- sirve para sustituir valores e inclusive unir dos tablas 
+-- la columna 1 y 2 deben ser del mismo tipo que las consultas que vaya a realizar 
+select col1, col2, col3 from tabla2
+union 
+...
+union
+select Col1, Col2, Col3 from tablan 
+
+-- SITUACIÓN HIPOTETICA Cambiar nombres de consolas de videojuegos a sus acronimos 
+-- Tradicional 
+--SELECT es solo cambios a nivel lectura
+select titulo, replace(plataforma, 'Nintendo Switch',
+						'NS') from videojuegos
+	where plataforma ='PlayStation 4'
+--con UNION
+union 
+select titulo, replace(plataforma, 'PlayStation 4',
+						'PS4') from videojuegos
+-- se necesita hacer una condición y elimine lo que no se necesita 
+	where plataforma ='PlayStation 4'
+
+	union --une dos tablas
+	select plataforma, titulo from videojuegos where plataforma
+		not in ('Nintendo Switch', 'PlayStation 4', 'PlayStation 5')
+
+-- Otro tipo de consulta 
+	select case campo 
+		when valor1 then Resultado1
+		when valor2 then Resultado2
+		...
+		else ResultadoDefault
+		End 
+
+SELECT titulo, case plataforma 
+	when 'Nintendo Switch' then 'NS'
+	when 'PlayStation 4' then 'PS4'
+	when 'PlayStation 5' then 'PS5'
+	else plataforma
+	end 
+	from videojuegos where plataforma is not null
+	--es más óptimo el case, conforme va recuperando la información lo va modificando 
+
+--case si agrega los valores por default, los nulos. 
+
+-- PARA LAS SUBCONSULTAS
+select id_detalle_pedido, cantidad*(
+	select precio from videojuegos
+	where titulo similar to '%[Zz]%elda') from --todos los Zelda zelda 
+	detallespedido
+	titulo from videojugos --quiero saber cuanto pago el usuario y el precio unitario del producto q compró
+select * from detallespedido
+
+select id_detalle_pedido, cantidad*(
+	select precio from videojuegos
+	where titulo similar to '%[Zz]%elda') from --todos los Zelda zelda 
+	detallespedido where id_videojuego=(
+		select id_videojuego from videojuegos where 
+			titulo similar to '%[Zz]elda')
+
+-- EJEMPLO lo siguiente es una tabla temporal, sirve para generar reportes
+create view case_plataforma as
+SELECT titulo, case plataforma 
+	when 'Nintendo Switch' then 'NS'
+	when 'PlayStation 4' then 'PS4'
+	when 'PlayStation 5' then 'PS5'
+	else plataforma
+	end 
+	from videojuegos where plataforma is not null
+
+-- ejemplo para generar reportes con vistas
+	select * from case_plataforma where plataforma ='NS'

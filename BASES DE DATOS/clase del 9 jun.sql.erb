@@ -1,0 +1,92 @@
+SELECT titulo from videojuegos
+		WHERE titulo like 'A%'; -- se trabaja con el simbolo de porcentaje
+
+		WHERE titulo SIMILAR TO 'A' --ignora el porcentaje, por eso se busca de esta manera 
+		WHERE titulo SIMOLAR TO 'A_' --esto va a buscar un titulo que tenga A+otro caracter (solo uno)
+		WHERE titulo SIMILAR TO '_A'
+
+		-- cambia si se pone el % (indica no me interesa que haya antes)
+		WHERE titulo like '%a' --toma la ultima ignorando lo que haya antes
+		WHERE titulo like '%a%' 
+		WHERE titulo similar to '_ _ _a%'
+
+		WHERE titulo similar to '(A|E|I|O|U)%'
+		WHERE titulo SIMILAR TO '[AEIOU]%'
+		-- recupera los que comiencen de la a a la h
+		WHERE titulo SIMILAR TO '[A-H]%'
+		WHERE titulo SIMILAR TO '_[AEIOUaeiou]___%'
+
+SELECT titulo, plataformas FROM videojuegos 
+	WHERE plataforma is null 
+
+-- milliseconds, seconds, minute, hour
+--day dow, week, month, year, decade, century, millenium algunas formas que podemos utilizar para la forma de fecha
+--extract para utlizarla necesito una parte de la fecha
+extract(ParteFecha from Fecha)
+date_part(ParteFecha, Fecha)
+Fecha+cast(# partefecha as interval)
+age(Fecha1, Fecha2)
+SELECT Titulo, fecha_lanzamiento 
+	FROM Videojuegos
+	LIMIT 3
+
+SELECT Titulo, fecha_lanzamiento, extract(month from fecha_lanzamiento)--en la parte de month puede ser year 
+	FROM Videojuegos
+	LIMIT 3
+	extract(second from now())
+	extract (decade from fecha_lanzamiento)
+	extract(millenium from fecha_lanzamiento)
+
+--otra manera
+date_part('century', fecha_lanzamiento )
+date_part('dow', fecha_lanzamiento ) --day of week
+fecha_lanzamiento+cast('5 day' as interval) -- me devuelve cinco dias despues de cada una de las fechas de lanazmiento, lo devuelve como un tipo de timestampt
+--así con century, milleniums, decade etc...
+
+-- ¿y si queremos sacar 
+date_part('year',current_date)-date_part('year', fecha_lanzamiento)
+
+-- hay otra manera con age
+age(current_date, fecha_lanzamiento)
+
+SELECT titulo, age(current_date, fecha_lanzamiento)
+	plataforma videojuegos
+	ORDER BY fecha_lanzamiento -- (ASC / DESC)
+
+SELECT nombre, primer_apellido, segundo_apellido
+FROM usuarios
+-- WHERE id_usuario < 20 para trabajar sobre los primero 20
+ORDER BY segundo_apellido ASC, 
+	primer_apellido DESC,
+	nombre ASC -- LIMIT 5 para que regrese los pirmero 5 registros
+
+	nombre ASC LIMIT 5 OFFSET 10 --para que comienza desde el registro 10 y solo regresa 5
+
+-- si tengo el order puedo agruparlos 
+--sum sum(), promedio avrg(), --count() contar, min(), max()
+--hay dos tipos de count
+
+SELECT count(plataforma),
+	count(*) --contabiliza todo
+	count() --solo aquellos valores validos que no pertenezcan a los vacios
+	from videojuegos
+
+SELECT count(stock)
+	FROM videojuegos
+	--
+	select min(stock),
+	select max(stock),
+	select avg(stock),
+	select sum(stock),
+SELECT plataforma, count(plataforma)
+	FROM videojuegos
+	GROUP BY plataforma
+	ORDER BY COUNT(plataforma) DESC
+	-- quiero que me presenten aquellos que tienen mas en almacenamiento
+	having count(plataforma) > 10 --se diferencia de where 
+	--where si funciona pero tengo 65 registros (en este ejemplo)
+	WHERE id_videojuegos <10 --la información se vera reducido, casi nunca se utiliza con el group by;
+	--donde los dos trabajan
+	WHERE id_videojuegos<10
+	GROUP BY plataforma
+	having count(plataforma)=3

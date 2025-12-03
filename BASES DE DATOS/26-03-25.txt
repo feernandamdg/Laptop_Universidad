@@ -1,0 +1,14 @@
+Se requiere la realización de un sistema de ventas para una tienda, en la cual se puedan registrar: 
+- clientes
+- pedidos 
+- productos 
+los cuales están incluidos en cada pedido. Cada cliente puede realizar varios pedidos y cada pedido puede contener múltiples productos, y un mismo producto puede aparecer en diferentes pedidos.
+
+Además de ello se debe de registrar la cantidad de cada producto en el pedido. Por lo que para los registros al momento que el cliente es dado de alta se registra su nombre con apellidos incluidos en el mismo campo, así como por el correo por el cual se enviará el ticket de su pedido. Con fines de tener un historial económico es necesario guardar la fecha de cada pedido; por otro lado al momento de registrar un producto en el sistema es necesario saber el nombre del producto y su precio de venta.
+
+Diagrama entidad relación. El primer vistazo hacia la base de datos. Que contiene elementos de la vida real. 
+
+Un sistema hospitalario busca gestionar la información de sus pacientes, médico, departamentos y citas médicas, para ello se debe tener en cuenta que cada paciente puede tener varias citas médicas y cada una de estas es atendida por un solo médico el cual puede atender a varios pacientes. Cada médico está asignado a un único departamento y cada departamento puede tener varios médicos, así como que un médico dirija al departamento. Es necesario registrar los datos como la fecha de la cita y la especialidad del médico, cedula profesional, así como su nombre compuesto por apellido y nombre; él médico debe estar asignado al departamento al que pertenece, del cual solo necesitamos el nombre. 
+
+Cuando un paciente es dado de alta ese es identificado por el folio de su expediente médico asignado. Cuando este se da de alta en un sistema también debe proporcionar el nombre completo con la misma estructura que el del médico, su dirección desglosada por calle, colonia, código postal, números interior y exterior y su fecha de nacimiento para poder saber su edad. Al momento que el paciente obtiene una cita es necesario ingresar el motivo ya que cada cita esta foliada por el sistema de manera automática. 
+

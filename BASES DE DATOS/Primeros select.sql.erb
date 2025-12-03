@@ -1,0 +1,126 @@
+
+
+select [*, campo, funciones, operaciones, texto, select]
+	from [N_tabla] (opcional [join, where, order by, limit,etc ])
+
+-- cuando yo mando a llamar algo, nombre de una columna es fácil pero en este caso el texto debo indicarle que es
+select 'Hola Mundo' as Texto
+
+--para ejecutar una sola linea de mi script la selecciono y le doy ejecutar, de lo contrario se ejecutará todo
+
+select now() as fecha1, current_date as fecha2 --ambas funciones regresan una fecha
+--fecha1 timestampt con zona horaria, si quiero trabajar con esta para extraer elementos especificos de la fecha se utilizan otras herramientas
+--fecha2 regresa la fecha en la cual estoy realizando la petición  
+
+-- ¿Qué más se puede hacer si necesidad de usar FROM
+select 3+6
+
+-- -------Invocar de esta base de datos la tabla usuarios
+select * from usuarios
+select conjunto_de_campos(columnas) from usuarios(nombre_tabla)
+
+--concatenación los dos dan el mismo resultado, ambos regresan la misma cantidad de registros
+--1er
+	select 'Hola' ||nombre || ' '||
+			primer_apellido||' '||
+			segundo_apellido as Texto
+			from usuarios 
+--2da forma usar una funcion que se llama concat
+	select concat ('Hola', nombre, ' ',
+			primer_apellido,' ',
+			segundo_apellido) as Texto
+			from usuarios 
+	-- para que solo me muestre 3 primeros registros
+			where id_usuario <= 3
+	-- si yo quisiese que esos solo esten de los registros 5 al 8
+			where id_usuario >=5 and id_usuario <=8
+
+-- en las condiciones se utilizan los operadores logicos y aritmeticos
+-- existen op especiales: 1. para intervalos, 2. para cadenas, 3. para busqueda de patrones.
+--1. 
+	select concat (nombre, ' ',primer_apellido,' ',
+		segundo_apellido) as Nombre_completo
+	from usuarios 
+	-- solo quiero aquellos donde su primer apellido tenga una coincidencia
+	where primer_apellido = 'Cruz'
+	or primer_apellido = 'Martinez'
+	or primer_apellido = 'Sanchez'
+	or primer_apellido = 'Diaz'
+	or primer_apellido = 'Gimenez'
+	or primer_apellido = 'Pelaez'
+	or primer_apellido = 'Jimenez'
+
+	--con el in (operador especial de coincidencia) le envio un arreglo de elementos que deben de coincidir 
+	where primer_apellido in ('Cruz', 'Martinez', 'Sanchez', '..' ) --en este solo se evalua una vez la lista
+
+	-- Ahora busqueda 
+	select id_usuario, concat (nombre, ' ',primer_apellido,' ',
+		segundo_apellido) as Nombre_completo
+	from usuarios 
+	where id-usuario => 10 and id-usuario<= 15
+	-- between corta de entrada los elementos y los arroja, es más eficiente
+		id-usuario between 10 and 15
+		from usuarios limit 5 -- 
+
+-- PARA EL USO DE CADENAR SE USA LENGHT, POSITION, REPEAT... cada uno de estos tiene particularidades para definir, obtener información etc. 
+	select length(
+		concat(nombre, ' ',primer_apellido,' ',
+		segundo_apellido)) as Nombre_completo
+	from usuarios limit 5
+
+	select UPPER( --puede ser LOWE (minusculas)
+		concat(nombre, ' ',primer_apellido,' ',
+		segundo_apellido)) as Nombre_completo
+	from usuarios limit 5
+
+	select 
+		concat(nombre, ' ',primer_apellido,' ',
+		segundo_apellido),
+
+		left(
+		concat(nombre, ' ', primer_apellido,
+		segundo_apellido ), 5) as Nombre_completo,
+			right(
+			concat(nombre, ' ', primer_apellido,' ',
+			segundo_apellido ), 5)) as Nombre_completo1
+
+	from usuarios limit 5
+
+-- ltrim funcion y rtril
+	ltrim(
+		concat(nombre, ' ', primer_apellido, ' ',
+		segundo_apellido ), 'Luis') as Nombre_completo,
+			rtrim(
+			concat(nombre, ' ', primer_apellido,' ',
+			segundo_apellido ), 'ez')) as Nombre_completo1
+-- Ahora substring es una función que indica una extracción de elementos, a diferencia de lo anterior necesita 3 elementos, 
+-- texto, a partir de que posición extrae infor
+-- cuantos caracteres quiero extraer
+	substring(
+		concat(nombre, ' ', primer_apellido, ' ',
+		segundo_apellido ), 5,7) as Nombre_completo
+	from usuarios limit 5
+
+	-- ALGO MÁS FÁCIL O DIVERTIDO 
+	replace(
+		concat(nombre, ' ', primer_apellido, ' ',
+		segundo_apellido ), 
+		'a',
+		'3AV1') as Nombre_completo
+	from usuarios limit 5
+	-- OTRO ELEMENTO 
+	repeat (concat(nombre, ' ', primer_apellido, ' ',
+		segundo_apellido ), 3)
+
+	--OTRA 
+	select position('Luis' in concat(nombre, ' ', primer_apellido, ' ',
+		segundo_apellido ))
+		from usuarios limit 5
+		--indica a partir de que posición comienza
+
+	select distinct (segundo_apellido) --los registros que son unicos
+		from usuarios
+---------------------------AQUÍ TERMINAMOS CON BUSQUEDA DE TEXTO ----------------------------------
+
+
+

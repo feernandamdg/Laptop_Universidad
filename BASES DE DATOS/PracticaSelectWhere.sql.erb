@@ -1,0 +1,181 @@
+-- porque no existe un Eduardo lo inserto
+INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, telefono, fecha_nacimiento, id_rol, contrasena)
+VALUES
+('Eduardo', 'Lopez', 'Alcantara', 'edu.lopez@example.com', '5566843987', '1999-08-13', 3, 'PassEduardo123');
+SELECT * FROM usuarios
+	WHERE nombre SIMILAR TO 'Eduardo%';
+
+-- 1.2 Las personas que no se llamen Eduardo
+SELECT * FROM usuarios WHERE nombre != 'Eduardo';
+
+-- 1.3 El email, contraseña, id de persona y nombre completo en una sola columna de los lectores
+SELECT email, contrasena, id_usuario, 
+       CONCAT(nombre, ' ', primer_apellido, ' ', COALESCE(segundo_apellido, '')) AS nombre_completo
+FROM usuarios 
+WHERE id_rol = 3;
+
+-- 1.4 El email, contraseña, id de persona y nombre completo en una sola columna de que no son bibliotecarios
+SELECT email, contrasena, id_usuario, 
+       CONCAT(nombre, ' ', primer_apellido, ' ', COALESCE(segundo_apellido, '')) AS nombre_completo
+FROM usuarios 
+WHERE id_rol != 2;
+
+-- 1.5 El nombre completo de las personas y la fecha_nacimiento de los que su identificador sea par y sea administrador
+SELECT CONCAT(nombre, ' ', primer_apellido, ' ', COALESCE(segundo_apellido, '')) AS nombre_completo, 
+       fecha_nacimiento
+FROM usuarios 
+WHERE id_usuario % 2 = 0 AND id_rol = 1;
+
+-- 1.6 El nombre completo de las personas y la fecha de registro de los que su identificador sea par y no sea bibliotecario
+SELECT CONCAT(nombre, ' ', primer_apellido, ' ', COALESCE(segundo_apellido, '')) AS nombre_completo, 
+       fecha_registro
+FROM usuarios 
+WHERE id_usuario % 2 = 0 AND id_rol != 2;
+
+-- 1.7 Regresa la leyenda siguiente para cada registro "La persona [Nombre_completo] se registro el dia [fecha_registro]"
+SELECT CONCAT('La persona ', nombre, ' ', primer_apellido, ' ', COALESCE(segundo_apellido, ''), 
+              ' se registro el dia ', fecha_registro) AS leyenda
+FROM usuarios;
+
+-- 1.8 Regresa la leyenda siguiente para cada registro "En la aplicacion el [Nombre_completo] posee un rol de [rol]"
+SELECT CONCAT('En la aplicacion el ', nombre, ' ', primer_apellido, ' ', COALESCE(segundo_apellido, ''), 
+              ' posee un rol de ', 
+              CASE 
+                WHEN id_rol = 1 THEN 'administrador'
+                WHEN id_rol = 2 THEN 'bibliotecario'
+                WHEN id_rol = 3 THEN 'lector'
+              END) AS leyenda
+FROM usuarios;
+
+-- 1.9 Libros con el doble de ejemplares disponibles que la edicion del libro
+SELECT * FROM libros WHERE cantidad_disponible = edicion * 2;
+
+-- 1.10 Prestamos con mas de 10 dias de diferencia entre la fecha de devolucion y la fecha del prestamo (sin usar funcion de fecha)
+SELECT * FROM prestamos 
+WHERE fecha_devolucion_max - fecha_prestamo > 10;
+
+-- 1.11 Libros donde la cantidad total es exactamente el triple de la cantidad disponible
+SELECT * FROM libros WHERE cantidad_total = cantidad_disponible * 3;
+
+-- 1.12 Libros con un numero impar de ejemplares disponibles
+SELECT * FROM libros WHERE cantidad_disponible % 2 = 1;
+
+-- 1.13 Libros con al menos 5 mas ejemplares disponibles que el numero de edicion
+SELECT * FROM libros WHERE cantidad_disponible >= edicion + 5;
+
+-- 1.14 Usuarios cuyo numero de telefono es divisible entre 3
+SELECT * FROM usuarios WHERE telefono IS NOT NULL AND CAST(telefono AS BIGINT) % 3 = 0;
+
+-- 2. EJERCICIOS UTILIZANDO IS NULL O IS NOT NULL
+
+-- 2.1 Actualizar la tabla Usuarios para que algunos registros no tengan telefono, otros no posean segundo apellido y otros no tengan fecha de nacimiento (Minimo 5 de C/U)
+
+-- Actualizar telefono a NULL para 5 usuarios
+UPDATE usuarios SET telefono = NULL WHERE id_usuario IN (1, 5, 10, 15, 20);
+
+-- Actualizar segundo_apellido a NULL para 5 usuarios
+UPDATE usuarios SET segundo_apellido = NULL WHERE id_usuario IN (3, 8, 13, 18, 23);
+
+-- Actualizar fecha_nacimiento a NULL para 5 usuarios
+UPDATE usuarios SET fecha_nacimiento = NULL WHERE id_usuario IN (7, 12, 17, 22, 27);
+
+-- Actualizar algunos libros sin clasificacion
+UPDATE libros SET clasificacion = NULL WHERE id_libro IN (1, 5, 10, 15, 20);
+
+-- Actualizar algunos libros sin editorial
+UPDATE libros SET editorial = NULL WHERE id_libro IN (2, 7, 12, 17, 22);
+
+-- 2.2 Muestre los usuarios que todavia no tienen un telefono asignado
+SELECT * FROM usuarios WHERE telefono IS NULL;
+
+-- 2.3 Muestra los usuarios con un segundo apellido no asignado
+SELECT * FROM usuarios WHERE segundo_apellido IS NULL;
+
+-- 2.4 Muestra los libros sin clasificacion
+SELECT * FROM libros WHERE clasificacion IS NULL;
+
+-- 2.5 Que libros no poseen una editorial asignada
+SELECT * FROM libros WHERE editorial IS NULL;
+
+-- 2.6 Cuales son los libros que no tienen un autor registrado en la tabla auxiliar
+SELECT * FROM libros 
+WHERE id_libro NOT IN (SELECT DISTINCT id_libro FROM libroautor);
+
+
+-- 3. EJERCICIOS UTILIZANDO OPERADORES LOGICOS Y OPERADORES ESPECIALES
+
+
+-- 3.1 Los que NO se llaman Pedro o Juan
+SELECT * FROM usuarios WHERE nombre NOT IN ('Pedro', 'Juan');
+
+-- 3.2 Los que se llamen Pedro y su apellido paterno es Ramirez
+INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, telefono, fecha_nacimiento, id_rol, contrasena)
+VALUES ('Pedro', 'Ramirez', 'Gonzalez', 'pedro.ramirez@example.com', '5559876543', '1985-08-22', 3, 'PassPedro123');
+SELECT * FROM usuarios WHERE nombre = 'Pedro' AND primer_apellido = 'Ramirez';
+
+-- 3.3 Los que su apellido paterno es Lopez y NO se llaman Hector
+SELECT * FROM usuarios WHERE primer_apellido = 'Lopez' AND nombre != 'Hector';
+
+-- 3.4 Los que se llaman Claudia o su apellido paterno es Lopez
+INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, telefono, fecha_nacimiento, id_rol, contrasena)
+VALUES ('Claudia', 'Sanchez', 'Rivera', 'claudia.sanchez@example.com', '5554567890', '1988-12-05', 3, 'PassClaudia123');
+SELECT * FROM usuarios WHERE nombre = 'Claudia' OR primer_apellido = 'Lopez';
+
+-- 3.5 Los que cualquiera de sus apellidos es Ruiz
+INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, telefono, fecha_nacimiento, id_rol, contrasena)
+VALUES ('Miguel', 'Ruiz', 'Torres', 'miguel.ruiz@example.com', '5553456789', '1991-07-18', 3, 'PassMiguel123');
+
+SELECT * FROM usuarios WHERE primer_apellido = 'Ruiz' OR segundo_apellido = 'Ruiz';
+
+-- 3.6 Los que su apellido paterno es Gomez, Romero o Flores (Operadores Especiales)
+SELECT * FROM usuarios WHERE primer_apellido IN ('Gomez', 'Romero', 'Flores');
+
+-- 3.7 Los que se llaman Daniel y su apellido paterno es Govea o Perez
+INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, telefono, fecha_nacimiento, id_rol, contrasena)
+VALUES
+('Daniel', 'Govea', 'Suarez', 'daniel.govea@example.com', '5566843977', '1999-07-13', 3, 'PassDaniel123');
+
+SELECT * FROM usuarios WHERE nombre = 'Daniel' AND primer_apellido IN ('Govea', 'Perez');
+
+-- 3.8 Los usuarios con un rol de lector o bibliotecario que no tienen un segundo apellido asignado
+SELECT * FROM usuarios WHERE id_rol IN (2, 3) AND segundo_apellido IS NULL;
+
+-- 3.9 Los prestamos realizados entre el 1 de enero de 2024 y el 1 de marzo de 2024 (Operadores Especiales)
+SELECT * FROM prestamos WHERE fecha_prestamo BETWEEN '2024-01-01' AND '2024-03-01';
+
+-- 3.10 Los clientes que cualquiera de sus apellidos sea Blanco, Perez o Garcia, pero su nombre no sea Fernanda, Claudia, Antonio o Luis (Operadores Especiales)
+INSERT INTO usuarios(nombre, primer_apellido, segundo_apellido, email, telefono, fecha_nacimiento, id_rol, contrasena)
+VALUES
+('Kenia', 'Blanco', 'Garcia', 'kenia.blanco@example.com', '5506243977', '1899-07-13', 3, 'PassKenia123');
+SELECT * FROM usuarios 
+WHERE (primer_apellido IN ('Blanco', 'Perez', 'Garcia') OR segundo_apellido IN ('Blanco', 'Perez', 'Garcia'))
+AND nombre NOT IN ('Fernanda', 'Claudia', 'Antonio', 'Luis');
+
+-- 3.11 Los usuarios que posean un telefono y alguno de los apellidos es (Martinez, Garcia, Vazquez, Diaz, Lopez, Hernandez) (Operadores Especiales)
+SELECT * FROM usuarios 
+WHERE telefono IS NOT NULL 
+AND (primer_apellido IN ('Martinez', 'Garcia', 'Vazquez', 'Diaz', 'Lopez', 'Hernandez') 
+     OR segundo_apellido IN ('Martinez', 'Garcia', 'Vazquez', 'Diaz', 'Lopez', 'Hernandez'));
+
+-- 3.12 Los clientes que no posean telefono y tampoco se apelliden Flores, Garcia o Ramirez en alguno de sus apellidos (Operadores Especiales)
+SELECT * FROM usuarios 
+WHERE telefono IS NULL 
+AND primer_apellido NOT IN ('Flores', 'Garcia', 'Ramirez') 
+AND (segundo_apellido IS NULL OR segundo_apellido NOT IN ('Flores', 'Garcia', 'Ramirez'));
+
+-- 3.13 Libros con ediciones entre 2 y 5 que no tienen editorial asignada (operadores especiales)
+SELECT * FROM libros WHERE edicion BETWEEN 2 AND 5 AND editorial IS NULL;
+
+-- 3.14 Libros con clasificacion entre 3 y 5 o sin clasificacion asignada (Operadores Especiales)
+SELECT * FROM libros WHERE clasificacion BETWEEN 3 AND 5 OR clasificacion IS NULL;
+
+-- 3.15 Libros con cantidad total entre 10 y 50 y sin clasificacion (operadores Especiales)
+SELECT * FROM libros WHERE cantidad_total BETWEEN 10 AND 50 AND clasificacion IS NULL;
+
+-- 3.16 Usuarios con rol 'administrador' o 'lector' que tienen segundo apellido nulo
+SELECT * FROM usuarios WHERE id_rol IN (1, 3) AND segundo_apellido IS NULL;
+
+-- Insertar un bibliotecario
+INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, telefono, fecha_nacimiento, id_rol, contrasena)
+VALUES ('Roberto', 'Silva', NULL, 'roberto.silva@biblioteca.com', '5557654321', '1982-02-28', 2, 'PassRoberto123');
+
